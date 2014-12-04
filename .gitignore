@@ -72,5 +72,7 @@ target/
 log/
 target/
 
+venv/
+
 
 
