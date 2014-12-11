@@ -1,5 +1,6 @@
 import urllib2
-
+import time
+from other.config import Config
 from BeautifulSoup import BeautifulSoup
 
 
@@ -8,7 +9,6 @@ class ArchiveCrawler(object):
     BASE_URL = "http://www.spiegel.de"
     YEAR_URL = "http://www.spiegel.de/nachrichtenarchiv/artikel-01.01.%s.html"
     DEFAULT_YEARS_TO_CRAWL = ["2014", "2013"]
-    DEBUG = True
 
 
     def crawl_post_links(self, years=DEFAULT_YEARS_TO_CRAWL):
@@ -21,12 +21,8 @@ class ArchiveCrawler(object):
         for day_link in day_links:
             links = self.crawl_day_link(day_link)
             if links is not None:
-                return_links += links
-
-                if ArchiveCrawler.DEBUG:
-                    return return_links
-
-        return return_links
+                for link in links:
+                    yield link
 
     def crawl_day_link(self, day_link):
 
@@ -34,6 +30,7 @@ class ArchiveCrawler(object):
         response = urllib2.urlopen(day_link)
         html = response.read()
         soup = BeautifulSoup(html)
+        time.sleep(Config.REQUEST_SLEEP_TIME)
 
         # search for main column and return all links
         main_column = soup.find('div', {'class': 'column-wide'})
@@ -53,6 +50,7 @@ class ArchiveCrawler(object):
             response = urllib2.urlopen(ArchiveCrawler.YEAR_URL % year)
             html = response.read()
             soup = BeautifulSoup(html)
+            time.sleep(Config.REQUEST_SLEEP_TIME)
 
             # find right column and loop through each module section
             right_column = soup.find('div', {'class': 'column-small'})
@@ -67,8 +65,5 @@ class ArchiveCrawler(object):
                         links = days.findAll('a')
                         if links is not None:
                             return_links += [ArchiveCrawler.BASE_URL + link['href'] for link in links]
-
-                            if ArchiveCrawler.DEBUG:
-                                return return_links
 
         return return_links

@@ -1,22 +1,28 @@
 from controller.ArchiveCrawler import ArchiveCrawler
 from controller.ArticleCrawler import ArticleCrawler
 
-if __name__ == '__main__':
-    crawler = ArchiveCrawler()
-    post_links = crawler.crawl_post_links()
 
+def app():
+    archive_crawler = ArchiveCrawler()
     article_crawler = ArticleCrawler()
+    link_generator = archive_crawler.crawl_post_links()
+
+    print
+    print "Crawler started. Please wait a moment..."
+    print
+
     articles = []
-    for link in post_links:
+    for num in range(5):
+        link = link_generator.next()
         article = article_crawler.crawl(link)
+
         if article:
             articles.append(article)
+            print article
 
-    print len(articles)
+    print
+    print "Articles crawled: " + str(len(articles))
 
-    for a in articles:
-        print a.title
-        print a.content
-        print a.images
-        print
-        print
+
+if __name__ == '__main__':
+    app()

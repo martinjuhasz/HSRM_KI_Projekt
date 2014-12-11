@@ -3,6 +3,8 @@ import urllib2
 import re
 from BeautifulSoup import BeautifulSoup
 from model.Article import Article
+from other.config import Config
+import time
 
 
 class ArticleCrawler(object):
@@ -19,6 +21,7 @@ class ArticleCrawler(object):
         """
         # extract content to bs
         response = urllib2.urlopen(article_url)
+        time.sleep(Config.REQUEST_SLEEP_TIME)
         html = response.read()
         soup = BeautifulSoup(html)
 
@@ -32,15 +35,15 @@ class ArticleCrawler(object):
         new_article = Article()
 
         # extract date & last_modified date
-        new_article.date = soup.find("meta", {"name": "date"})["content"]
-        new_article.last_modified = soup.find("meta", {"name": "last-modified"})["content"]
+        new_article.date = soup.find("meta", {"name": "date"})["content"].encode('utf-8').strip()
+        new_article.last_modified = soup.find("meta", {"name": "last-modified"})["content"].encode('utf-8').strip()
 
         # extract title, remove "- SPIEGEL ONLINE"
-        new_article.title = soup.find("meta", {"property": "og:title"})["content"].replace("- SPIEGEL ONLINE", "")
+        new_article.title = soup.find("meta", {"property": "og:title"})["content"].replace("- SPIEGEL ONLINE", "").encode('utf-8').strip()
         # extract description
-        new_article.description = soup.find("meta", {"property": "og:description"})["content"]
+        new_article.description = soup.find("meta", {"property": "og:description"})["content"].encode('utf-8').strip()
         # extract keywords
-        new_article.keywords = soup.find("meta", {"name": "keywords"})["content"]
+        new_article.keywords = soup.find("meta", {"name": "keywords"})["content"].encode('utf-8').strip()
 
         # get content html
         article_html = soup.find('div', {'class': 'article-section clearfix'})
@@ -54,14 +57,14 @@ class ArticleCrawler(object):
         for script in article_html(["script", "style"]):
             script.extract()
 
-        new_article.content = article_html.getText()
+        new_article.content = article_html.getText().encode('utf-8').strip()
 
         # get teaser image
         teaser_img_html = soup.find("div", attrs={"id": "js-article-top-wide-asset"})
         if teaser_img_html:
             teaser_img = teaser_img_html.find("img")
             if teaser_img:
-                new_article.images.append((teaser_img["src"], teaser_img["title"]))
+                new_article.images.append((teaser_img["src"].encode('utf-8').strip(), teaser_img["title"].encode('utf-8').strip()))
 
         return new_article
 
