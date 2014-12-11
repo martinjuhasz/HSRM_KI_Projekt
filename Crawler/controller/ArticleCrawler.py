@@ -1,25 +1,33 @@
 # -*- coding: utf-8 -*-
 import urllib2
-import nltk
 import re
 from BeautifulSoup import BeautifulSoup
 from model.Article import Article
 
-test_article_big_teaser_image = "http://www.spiegel.de/wissenschaft/natur/erdoel-laeuft-in-naturschutzgebiet-in-israel-leck-in-pipeline-a-1006569.html"
-test_article_small_teaser_image = "http://www.spiegel.de/politik/ausland/anschlag-in-afghanistan-attackierte-cia-basis-plante-drohnen-angriffe-a-669739.html"
-test_image_in_article = "http://www.spiegel.de/kultur/kino/box-office-harry-potter-und-der-historische-hollywood-rekord-a-174947.html"
-test_fotostrecke = "http://www.spiegel.de/panorama/fotostrecke-silvester-feiern-und-feuerwerke-weltweit-a-174924.html"
-test_article_2001 = "http://www.spiegel.de/panorama/world-trade-center-der-anschlag-von-1993-a-156568.html"
-test_ryder_cup_results = "http://www.spiegel.de/sport/sonst/ryder-cup-das-team-der-usa-a-318353.html"
-
 
 class ArticleCrawler(object):
-
+    """
+    Extracts data (e.g. date, title, content) of an article of Spiegel Online.
+    """
     def crawl(self, article_url):
+        """
+        Extracts data (e.g. date, title, content) of an article of Spiegel Online.
+
+        :param article_url: url of article to crawl
+        :return: Article object filled with info of the article.
+        :return: None if no real article
+        """
         # extract content to bs
         response = urllib2.urlopen(article_url)
         html = response.read()
         soup = BeautifulSoup(html)
+
+        # return None if site is no article
+        type = soup.find("meta", {"property": "og:type"})
+        if not type or type["content"] != "article":
+            print 'Log: ignored ' + article_url
+            return None
+
 
         new_article = Article()
 
@@ -40,6 +48,7 @@ class ArticleCrawler(object):
         # extract images in text
         for image_intext in article_html.findAll('div', attrs={"class": re.compile(r".*\bjs-module-box-image\b.*")}):
             image_intext.extract()
+            # TODO: crawl image gallery and get images for article
 
         # kill all script and style elements
         for script in article_html(["script", "style"]):
@@ -51,13 +60,21 @@ class ArticleCrawler(object):
         teaser_img_html = soup.find("div", attrs={"id": "js-article-top-wide-asset"})
         if teaser_img_html:
             teaser_img = teaser_img_html.find("img")
-            new_article.images.append((teaser_img["src"], teaser_img["title"]))
+            if teaser_img:
+                new_article.images.append((teaser_img["src"], teaser_img["title"]))
 
         return new_article
 
 
-
 if __name__ == "__main__":
+    test_article_big_teaser_image = "http://www.spiegel.de/wissenschaft/natur/erdoel-laeuft-in-naturschutzgebiet-in-israel-leck-in-pipeline-a-1006569.html"
+    test_article_small_teaser_image = "http://www.spiegel.de/politik/ausland/anschlag-in-afghanistan-attackierte-cia-basis-plante-drohnen-angriffe-a-669739.html"
+    test_image_in_article = "http://www.spiegel.de/kultur/kino/box-office-harry-potter-und-der-historische-hollywood-rekord-a-174947.html"
+    test_fotostrecke = "http://www.spiegel.de/panorama/fotostrecke-silvester-feiern-und-feuerwerke-weltweit-a-174924.html"
+    test_article_2001 = "http://www.spiegel.de/panorama/world-trade-center-der-anschlag-von-1993-a-156568.html"
+    test_ryder_cup_results = "http://www.spiegel.de/sport/sonst/ryder-cup-das-team-der-usa-a-318353.html"
+
+
     article_crawler = ArticleCrawler()
 
     new_article1 = article_crawler.crawl(test_article_big_teaser_image)
