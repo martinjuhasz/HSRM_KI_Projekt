@@ -5,7 +5,7 @@ from ArticleCrawler import ArticleCrawler
 import lucene
 from java.io import File
 from org.apache.lucene.analysis.standard import StandardAnalyzer
-from org.apache.lucene.index import IndexWriter, IndexWriterConfig
+from org.apache.lucene.index import IndexWriter, IndexWriterConfig, Term
 from org.apache.lucene.document import Document, Field, StringField, TextField
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.util import Version
@@ -37,7 +37,7 @@ class LuceneIndexer(object):
             doc.add(Field('image_url', article.images[0][0], Field.Store.YES, Field.Index.NOT_ANALYZED))
             doc.add(Field('image_text', article.images[0][1], Field.Store.YES, Field.Index.ANALYZED))
         doc.add(Field('url', article.url, Field.Store.YES, Field.Index.NOT_ANALYZED))
-        self.writer.addDocument(doc)
+        self.writer.updateDocument(Term("url", article.url), doc)
 
     def write_to_file(self):
         # making changes permanent
