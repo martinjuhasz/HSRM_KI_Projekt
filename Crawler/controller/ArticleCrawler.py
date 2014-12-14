@@ -33,6 +33,7 @@ class ArticleCrawler(object):
 
 
         new_article = Article()
+        new_article.url = article_url
 
         # extract date & last_modified date
         new_article.date = soup.find("meta", {"name": "date"})["content"].encode('utf-8').strip()
@@ -57,7 +58,13 @@ class ArticleCrawler(object):
         for script in article_html(["script", "style"]):
             script.extract()
 
-        new_article.content = article_html.getText().encode('utf-8').strip()
+        new_article.content = article_html.getText().encode('utf-8')
+        # break into lines and remove leading and trailing space on each
+        lines = (line.strip() for line in new_article.content.splitlines())
+        # break multi-headlines into a line each
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        # drop blank lines
+        new_article.content = '\n'.join(chunk for chunk in chunks if chunk)
 
         # get teaser image
         teaser_img_html = soup.find("div", attrs={"id": "js-article-top-wide-asset"})

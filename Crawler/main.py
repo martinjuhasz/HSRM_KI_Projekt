@@ -17,6 +17,7 @@ def app():
         article = article_crawler.crawl(link)
 
         if article:
+
             articles.append(article)
             print article
 

@@ -8,6 +8,7 @@ class Article(object):
         self.last_modified = ""
         self.content = ""
         self.images = []
+        self.url = ""
 
     def __repr__(self):
         representation = "Article[" \
