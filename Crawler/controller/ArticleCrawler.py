@@ -2,8 +2,8 @@
 import urllib2
 import re
 from BeautifulSoup import BeautifulSoup
-from model.Article import Article
-from other.config import Config
+from Crawler.model.Article import Article
+from Crawler.other.config import Config
 import time
 
 

@@ -1,7 +1,8 @@
 from flask import Flask
 from flask import render_template
 from flask import request
-from model.Result import  Result
+from model.Result import Result
+from Lucene.LuceneSearcher import LuceneSearcher
 
 app = Flask(__name__)
 
@@ -17,12 +18,21 @@ def search():
     # extract results
     results = None
     if searchterm:
+        # perform search
+        searcher = LuceneSearcher()
+        results_dic, duration = searcher.perform_search(searchterm)
+
+        results = []
+        for res in results_dic:
+            results.append(Result(res["title"], res["description"], res["image_url"]))
+
+        """
         # add some dummy results
         results = []
         results.append(Result("Titel 1", "Lorem ipsum dolor", "https://placekitten.com/g/300/300"))
         results.append(Result("Titel 2", "Lorem ipsum dolor sit amet", "https://placekitten.com/g/550/550"))
         results.append(Result("Titel 3", "Lorem ipsum dolor lorem", "https://placekitten.com/g/500/500"))
-
+        """
 
     return render_template('search.html', searchterm=searchterm, results=results)
 

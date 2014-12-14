@@ -1,3 +1,4 @@
+from datetime import datetime
 import site
 site.addsitedir("/usr/local/lib/python2.7/site-packages")
 from ArticleCrawler import ArticleCrawler
@@ -5,10 +6,12 @@ from ArticleCrawler import ArticleCrawler
 import lucene
 from java.io import File
 from org.apache.lucene.analysis.standard import StandardAnalyzer
-from org.apache.lucene.index import IndexWriter, IndexWriterConfig, Term
+from org.apache.lucene.index import IndexWriter, IndexWriterConfig, Term, DirectoryReader
 from org.apache.lucene.document import Document, Field, StringField, TextField
 from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.util import Version
+from org.apache.lucene.queryparser.classic import QueryParser
+from org.apache.lucene.search import IndexSearcher
 
 
 class LuceneIndexer(object):
@@ -16,12 +19,12 @@ class LuceneIndexer(object):
         lucene.initVM()
 
         # language processor and storage
-        analyzer = StandardAnalyzer(Version.LUCENE_CURRENT)
-        store = SimpleFSDirectory(File('./../Lucene/data/'))
+        self.analyzer = StandardAnalyzer(Version.LUCENE_CURRENT)
+        self.store = SimpleFSDirectory(File('./../Lucene/data/'))
 
         # writes data to the index
-        config = IndexWriterConfig(Version.LUCENE_CURRENT, analyzer, overwrite=True)
-        self.writer = IndexWriter(store, config)
+        config = IndexWriterConfig(Version.LUCENE_CURRENT, self.analyzer, overwrite=True)
+        self.writer = IndexWriter(self.store, config)
         #self.writer = IndexWriter(store, analyzer, overwrite=True)
 
     def add_article(self, article):
@@ -37,6 +40,8 @@ class LuceneIndexer(object):
             doc.add(Field('image_url', article.images[0][0], Field.Store.YES, Field.Index.NOT_ANALYZED))
             doc.add(Field('image_text', article.images[0][1], Field.Store.YES, Field.Index.ANALYZED))
         doc.add(Field('url', article.url, Field.Store.YES, Field.Index.NOT_ANALYZED))
+
+        # creates document or updates if already exists
         self.writer.updateDocument(Term("url", article.url), doc)
 
     def write_to_file(self):
@@ -44,4 +49,22 @@ class LuceneIndexer(object):
         self.writer.commit()
         self.writer.close()
 
+
+
+    def perform_search(self, searchterm):
+        # processing a query
+        parser = QueryParser(Version.LUCENE_CURRENT, "content", self.analyzer)
+        parser.setDefaultOperator(QueryParser.Operator.AND)
+
+        query = parser.parse(searchterm)
+
+        # conducting search
+        searcher = IndexSearcher(DirectoryReader.open(self.store))
+
+        start = datetime.now()
+        scoreDocs = searcher.search(query, 50).scoreDocs
+        duration = datetime.now() - start
+
+        print scoreDocs
+        print duration
 
