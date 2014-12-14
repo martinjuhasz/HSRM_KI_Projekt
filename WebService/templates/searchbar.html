@@ -1,0 +1,10 @@
+<nav class="navbar navbar-default" role="navigation">
+  <form class="navbar-form navbar-left" role="search" method="post">
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Search" {% if searchterm %}value="{{searchterm}}"{% endif %} name="searchterm" id="searchterm">
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+    <button type="reset" class="btn btn-default navbar-btn">Reset</button>
+  </form>
+
+</nav>

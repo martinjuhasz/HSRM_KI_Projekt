@@ -1,17 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Search{% endblock %}
 {% block content %}
+
     <div class="page-header">
-        <h1>Spieglr<small>search</small></h1>
+        <h1>Spieglr<small> search</small></h1>
     </div>
-<form class="form-inline" action="" method="post" name="search">
-  <div class="form-group">
-    <div class="input-group">
-      <label class="sr-only" for="searchterm">Search term</label>
-      <input type="text" class="form-control" id="searchterm" placeholder="Enter search term">
-    </div>
-  </div>
-  <button type="submit" class="btn btn-default">Search</button>
-</form>
+
+    {% include 'searchbar.html' %}
+
+    {% if results %}
+        {% include 'results.html' %}
+    {% endif %}
 
 {% endblock %}

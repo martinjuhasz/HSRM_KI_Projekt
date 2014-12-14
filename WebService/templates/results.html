@@ -1,0 +1,20 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Search Results</h3>
+  </div>
+  <div class="panel-body">
+
+    {% for result in results %}
+      <div class="media">
+        <a class="media-left" href="#">
+          <img src="{{ result.image_url }}" alt="{{ result.title }}">
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading">{{ result.title }}</h4>
+          {{ result.description }}
+        </div>
+      </div>
+      {% endfor %}
+
+  </div>
+</div>
