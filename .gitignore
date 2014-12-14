@@ -73,7 +73,7 @@ log/
 target/
 
 venv/
-controller/data
+Lucene/data/
 
 
 
