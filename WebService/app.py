@@ -24,7 +24,7 @@ def search():
 
         results = []
         for res in results_dic:
-            results.append(Result(res["title"], res["description"], res["image_url"]))
+            results.append(Result(res))
 
         """
         # add some dummy results

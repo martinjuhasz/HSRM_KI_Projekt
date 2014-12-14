@@ -5,16 +5,52 @@
   <div class="panel-body">
 
     {% for result in results %}
+
       <div class="media">
-        <a class="media-left" href="#">
+        <a class="media-left" href="{{ result.url }}">
           <img src="{{ result.image_url }}" alt="{{ result.title }}">
         </a>
         <div class="media-body">
-          <h4 class="media-heading">{{ result.title }}</h4>
+          <h4 class="media-heading"><a href="{{ result.url }}">{{ result.title }}</a></h4>
           {{ result.description }}
+          <hr />
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal{{ loop.index }}">
+            Read Article
+            </button>
+
+            <a href="{{ result.url }}" class="btn btn-default btn-sm" >
+              Visit Website
+        </a>
         </div>
       </div>
+
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">{{ result.title }}</h4>
+              </div>
+              <div class="modal-body">
+                {{ result.content }}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <a href="{{ result.url }}" class="btn btn-primary">Visit Website</a>
+              </div>
+            </div>
+          </div>
+        </div><!-- end Modal -->
+
+
+
       {% endfor %}
+
+
 
   </div>
 </div>
