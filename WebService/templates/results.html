@@ -1,6 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Search Results</h3>
+    <p>Duration: {{ duration }} seconds, Results: </p>
   </div>
   <div class="panel-body">
 
@@ -36,6 +37,8 @@
                 <h4 class="modal-title" id="myModalLabel">{{ result.title }}</h4>
               </div>
               <div class="modal-body">
+                <img src="{{ result.image_url }}" class="img-responsive" alt="{{ result.title }}">
+                <p>{{ result.image_text }}</p>
                 {{ result.content }}
               </div>
               <div class="modal-footer">
