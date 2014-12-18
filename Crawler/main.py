@@ -23,7 +23,7 @@ def app():
                 lucene_indexer.add_article(article)
                 print article
         except Exception, e:
-            pass
+            print "Log: could not crawl article " + str(article)
 
     print
     print "Crawler ended. Saving..."
