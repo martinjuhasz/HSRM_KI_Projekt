@@ -36,8 +36,12 @@ class ArticleCrawler(object):
         new_article.url = article_url
 
         # extract date & last_modified date
-        new_article.date = soup.find("meta", {"name": "date"})["content"].encode('utf-8').strip()
-        new_article.last_modified = soup.find("meta", {"name": "last-modified"})["content"].encode('utf-8').strip()
+        date = soup.find("meta", {"name": "date"})
+        if date:
+            new_article.date = date["content"].encode('utf-8').strip()
+        last_modified = soup.find("meta", {"name": "last-modified"})
+        if last_modified:
+            last_modified["content"].encode('utf-8').strip()
 
         # extract title, remove "- SPIEGEL ONLINE"
         new_article.title = soup.find("meta", {"property": "og:title"})["content"].replace("- SPIEGEL ONLINE", "").encode('utf-8').strip()

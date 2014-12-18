@@ -13,7 +13,7 @@ def app():
     print "Crawler started. Please wait a moment..."
     print
 
-    for num in range(500):
+    for num in range(5):
         try:
             link = link_generator.next()
             article = article_crawler.crawl(link)

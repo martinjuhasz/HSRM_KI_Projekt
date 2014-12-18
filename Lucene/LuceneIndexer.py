@@ -12,30 +12,39 @@ from org.apache.lucene.store import SimpleFSDirectory
 from org.apache.lucene.util import Version
 from org.apache.lucene.queryparser.classic import QueryParser
 from org.apache.lucene.search import IndexSearcher
-
+from org.apache.lucene.analysis.de import GermanAnalyzer
 
 class LuceneIndexer(object):
     def __init__(self):
         lucene.initVM()
 
         # language processor and storage
-        self.analyzer = StandardAnalyzer(Version.LUCENE_CURRENT)
+        self.analyzer = GermanAnalyzer(Version.LUCENE_CURRENT)
         self.store = SimpleFSDirectory(File('./../Lucene/data/'))
 
         # writes data to the index
         config = IndexWriterConfig(Version.LUCENE_CURRENT, self.analyzer, overwrite=True)
         self.writer = IndexWriter(self.store, config)
-        #self.writer = IndexWriter(store, analyzer, overwrite=True)
+
 
     def add_article(self, article):
         # constructing a document
         doc = Document()
-        doc.add(Field('title', article.title, Field.Store.YES, Field.Index.ANALYZED))
-        doc.add(Field('description', article.description, Field.Store.YES, Field.Index.ANALYZED))
+
+        title = Field('title', article.title, Field.Store.YES, Field.Index.ANALYZED)
+        title.setBoost(10.0)
+        doc.add(title)
+
+        description = Field('description', article.description, Field.Store.YES, Field.Index.ANALYZED)
+        description.setBoost(5.0)
+        doc.add(description)
+
         doc.add(Field('keywords', article.keywords, Field.Store.YES, Field.Index.NOT_ANALYZED))
-        doc.add(Field('date', article.date, Field.Store.YES, Field.Index.NOT_ANALYZED))
-        doc.add(Field('last_modified', article.last_modified, Field.Store.YES, Field.Index.NOT_ANALYZED))
         doc.add(Field('content', article.content, Field.Store.YES, Field.Index.ANALYZED))
+        if article.date:
+            doc.add(Field('date', article.date, Field.Store.YES, Field.Index.NOT_ANALYZED))
+        if article.last_modified:
+            doc.add(Field('last_modified', article.last_modified, Field.Store.YES, Field.Index.NOT_ANALYZED))
         if article.images:
             doc.add(Field('image_url', article.images[0][0], Field.Store.YES, Field.Index.NOT_ANALYZED))
             doc.add(Field('image_text', article.images[0][1], Field.Store.YES, Field.Index.ANALYZED))
