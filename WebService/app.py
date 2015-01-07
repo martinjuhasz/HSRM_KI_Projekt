@@ -18,10 +18,11 @@ def search():
     # extract results
     results = None
     duration = None
+    count_results = None
     if searchterm:
         # perform search
         searcher = LuceneSearcher()
-        results_dic, duration = searcher.perform_search(searchterm)
+        results_dic, duration, count_results = searcher.perform_search(searchterm)
         duration = duration.total_seconds()
         results = []
         for res in results_dic:
@@ -35,7 +36,7 @@ def search():
         results.append(Result("Titel 3", "Lorem ipsum dolor lorem", "https://placekitten.com/g/500/500"))
         """
 
-    return render_template('search.html', searchterm=searchterm, results=results, duration=duration)
+    return render_template('search.html', searchterm=searchterm, results=results, duration=duration, count_results=count_results)
 
 if __name__ == "__main__":
     app.debug = True
