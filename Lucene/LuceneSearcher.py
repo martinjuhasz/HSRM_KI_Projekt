@@ -23,7 +23,7 @@ class LuceneSearcher(object):
         self.analyzer = GermanAnalyzer(Version.LUCENE_CURRENT)
         self.store = SimpleFSDirectory(File('./../Lucene/data/'))
 
-    def perform_search(self, searchterm):
+    def perform_search(self, searchterm, results_per_page, page):
         # if there is a field in the searchterm
         """if ":" in searchterm:
             # processing a query
@@ -58,15 +58,24 @@ class LuceneSearcher(object):
         searcher = IndexSearcher(DirectoryReader.open(self.store))
 
         start = datetime.now()
-        hits = searcher.search(query, 5)
+        hits = searcher.search(query, results_per_page + (results_per_page * page))
         score_docs = hits.scoreDocs
         count_results = hits.totalHits
         duration = datetime.now() - start
 
         # results to return
         results = []
+        count = 0
 
         for scoreDoc in score_docs:
+
+            # skip offset
+            if count < results_per_page * page:
+                count += 1
+                continue
+            count += 1
+
+
             doc = searcher.doc(scoreDoc.doc)
             table = dict((field.name(), field.stringValue()) for field in doc.getFields())
             results.append(table)

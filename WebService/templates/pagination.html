@@ -1,0 +1,17 @@
+<nav>
+          <ul class="pagination">
+            <li {% if current_page <= 0 %}class="disabled"{% endif %}>
+              <a {% if current_page > 0 %}href="{{ url_for('search', q=searchterm, page=current_page - 1)}}"{% endif %} aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {% for page_num in range(0, total_pages + 1) %}
+                <li  {% if current_page == page_num %}class="active"{% endif %}><a href="{{ url_for('search', q=searchterm, page=page_num)}}">{{ page_num + 1 }}</a></li>
+            {% endfor %}
+            <li {% if current_page >= total_pages %}class="disabled"{% endif %}>
+              <a  {% if current_page < total_pages %}href="{{ url_for('search', q=searchterm, page=current_page + 1)}}"{% endif %} aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>

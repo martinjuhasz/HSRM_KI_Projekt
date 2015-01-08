@@ -11,10 +11,11 @@ class ArchiveCrawler(object):
     DEFAULT_YEARS_TO_CRAWL = ["2014", "2013"]
 
 
-    def crawl_post_links(self, years=DEFAULT_YEARS_TO_CRAWL):
+    def crawl_post_links(self, years=DEFAULT_YEARS_TO_CRAWL, skip_links=0):
 
         # crawl for all daily pages for years
-        return_links = []
+        count = 0
+
         day_links = self.crawl_years(years)
 
         # for each day link crawl for all posts
@@ -22,7 +23,9 @@ class ArchiveCrawler(object):
             links = self.crawl_day_link(day_link)
             if links is not None:
                 for link in links:
-                    yield link
+                    if count >= skip_links:
+                        yield link
+                    count += 1
 
     def crawl_day_link(self, day_link):
 
